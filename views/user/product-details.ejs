@@ -1,0 +1,665 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= product.productName || 'Product Details' %></title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> -->
+<%- include("../../views/partials/user/header") %>
+    <style>
+        .product-gallery {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        /* .main-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        } */
+
+        .thumbnail-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .thumbnail.active {
+            border-color: #007bff;
+        }
+
+        .product-info {
+            padding: 1rem;
+        }
+
+        .price-block {
+            margin: 1rem 0;
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #666;
+        }
+
+        .sale-price {
+            color: #ff4444;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .stock-status {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+
+        .stock-status.in-stock {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .stock-status.out-stock {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem 0;
+
+        }
+
+        /* .main-image-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .main-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        } */
+
+        /* .main-image.zoomed {
+            transform: scale(1.5);
+            cursor: zoom-out;
+        } */
+
+        /* .main-image:not(.zoomed) {
+            cursor: zoom-in;
+        } */
+
+        .breadcrumb-option {
+            width: 100%;
+            background-color: white;
+            height: auto;
+            margin-bottom: 50px;
+        }
+
+        /* -------------------------- */
+        /* .main-image { */
+        /* width: 100%; */
+        /* Set the image width to 100% of the container */
+        /* height: auto; */
+        /* Keep the aspect ratio intact */
+        /* transition: transform 0.3s ease; */
+        /* Smooth transition when zooming */
+        /* object-fit: contain; */
+        /* Ensure the image scales without cropping */
+        /* } */
+
+        /* .main-image-container {
+            position: relative;
+            overflow: hidden; */
+        /* Hide any part of the image that overflows */
+        /* width: 100%;
+            height: 400px; */
+        /* Set the height to suit your design */
+        /* } */
+        .main-image-container {
+            overflow: hidden;
+            position: relative;
+            width: 400px;
+            /* Adjust width as needed */
+            height: 400px;
+            /* Adjust height as needed */
+        }
+
+        .main-image {
+            width: 100%;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .main-image.zoomed {
+            transform: scale(2);
+            /* Adjust zoom level */
+        }
+    </style>
+    <!-- </head> -->
+
+    <body>
+        <div class="container mt-5">
+            <section class="breadcrumb-option">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="breadcrumb__text">
+                                <!-- <h4>Shop</h4> -->
+                                <div class="breadcrumb__links">
+                                    <a href="/">Home</a>
+                                    <a href="/Shop">Shop</a>
+                                    <span>
+                                        <%= category ? category.name : 'Product details' %>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="product-gallery">
+                        <div class="main-image-container">
+                            <img id="mainImage" src="/uploads/productImage/<%= product.productImage[0] %>"
+                                alt="<%= product.productName %>" class="main-image">
+
+                        </div>
+                        <div class="thumbnail-container">
+                            <% product.productImage.forEach((image, index)=> { %>
+                                <img src="/uploads/productImage/<%= image %>" alt="Product thumbnail <%= index + 1 %>"
+                                    class="thumbnail <%= index === 0 ? 'active' : '' %>"
+                                    onclick="changeImage('/uploads/productImage/<%= image %>', this)">
+                                <% }); %>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-6">
+                    <div class="product-info">
+                        <h1 class="product-title" style="color: black; font-size: 40px;">
+                            <%= product.productName || 'No name available' %>
+                        </h1>
+                        <p style="font-weight: bold;" class="text-muted">Category: <%= category ? category.name : 'N/A'
+                                %>
+                        </p>
+
+                        <div class="mb-3">
+                            <p id="stock_display" style="font-weight: bold;"></p>
+                            <p>Price: <span id="price_display">0</span></p>
+
+
+                           
+                        </div>
+
+
+
+                        <div class="dropdown-container" style="display: flex; align-items: center; gap: 20px;">
+                            <!-- Variant Selector -->
+                            <div class="variant-selector" style="display: flex; align-items: center; gap: 10px;">
+                                <label for="variant">Select Variant:</label>
+                                <select id="variant" class="form-select" style="width: 150px;" onchange="variantselect()">
+                                  <% if (variants.length > 0) { %>
+                                    <% variants.forEach((variant) => { %>
+                                      <option 
+                                        value="<%= variant._id %>" 
+                                        data-original-price="<%= variant.originalPrice %>" 
+                                        data-discounted-price="<%= variant.discountedPrice %>" 
+                                        data-stock="<%= variant.stock %>">
+                                        <%= variant.weight %>
+                                      </option>
+                                    <% }); %>
+                                  <% } else { %>
+                                    <option disabled>No variants available</option>
+                                  <% } %>
+                                </select>
+                              </div>
+
+                            <!-- Quantity Selector -->
+                            <div class="quantity-selector" style="display: flex; align-items: center; gap: 10px;">
+                                <label for="quantity">Quantity:</label>
+                                <button type="button" id="decrease" onclick="updateQuantity(-1)" style="padding: 5px 10px;">-</button>
+                                <input type="text" id="quantity" class="form-control" style="width: 50px;" value="1" readonly />
+                                <button type="button" id="increase" onclick="updateQuantity(1)" style="padding: 5px 10px;">+</button>
+                              </div>
+
+                        </div>
+
+                        
+                    </div>
+                    <div class="product-description mt-4">
+                        <h4>Description</h4>
+                        <br>
+                        <p>
+                            <%= product.description || 'No description available.' %>
+                        </p>
+                    </div>
+                    <br>
+
+                    <div class="d-grid gap-2 ">
+                        <button onclick="addToCart('<%= product._id %>')" class="btn btn-primary">
+                            Add to Cart
+                        </button>
+                        <button onclick="addToWishlist('<%= product._id %>')" class="btn btn-outline-primary">
+                            Add to Wishlist
+                        </button>
+                       
+                    </div>
+                </div>
+            
+            
+            </div>
+        
+        
+        
+        </div>
+        <!-- <div class="product-reviews mt-5">
+            <h4>Ratings & Reviews</h4>
+            <div class="mb-3">
+                <% if (product.reviews && product.reviews.length> 0) { %>
+                    <% product.reviews.forEach(review=> { %>
+                        <div class="review mb-2">
+                            <strong>
+                                <%= review.user.name %>
+                            </strong>
+                            <span class="text-warning">
+                                <% for (let i=0; i < 5; i++) { %>
+                                    <i class="fas fa-star <%= i < review.rating ? '' : 'text-muted' %>"></i>
+                                    <% } %>
+                            </span>
+                            <p>
+                                <%= review.comment %>
+                            </p>
+                        </div>
+                        <% }); %>
+                            <% } else { %>
+                                <p>No reviews yet. Be the first to review this product!</p>
+                                <% } %>
+            </div>
+        </div> -->
+        <br>
+        <br>
+        <br>
+        <div class="related-products mt-5">
+            <h3>Related Products</h3>
+            <br>
+        <br>
+        <br>
+            <div class="row">
+                <% relatedProducts.forEach((related)=> { %>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <img src="/uploads/productImage/<%= related.productImage[0] %>"
+                                alt="<%= related.productName %>" class="card-img-top">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <%= related.productName %>
+                                </h5>
+                                <!-- <p class="card-text">₹<%= related.salePrice || related.regularPrice %> -->
+                                </p>
+                                <a href="/productDetails?id=<%= product._id %>" class="btn btn-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    <% }); %>
+            </div>
+        </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <script>
+            // -----------------------------------------------------------
+
+            const mainImage = document.getElementById('mainImage');
+
+            const mainImageContainer = mainImage.parentElement;
+
+            // Handle image zoom
+            mainImageContainer.addEventListener('mouseenter', () => {
+                mainImage.classList.add('zoomed');
+            });
+
+            mainImageContainer.addEventListener('mouseleave', () => {
+                mainImage.classList.remove('zoomed');
+            });
+
+            // Handle image pan on mouse move
+            mainImageContainer.addEventListener('mousemove', (e) => {
+                if (mainImage.classList.contains('zoomed')) {
+                    const rect = mainImageContainer.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width;
+                    const y = (e.clientY - rect.top) / rect.height;
+
+                    mainImage.style.transformOrigin = `${x * 100}% ${y * 100}%`;
+                }
+            });
+
+            // -----------------------------------------------------------
+
+            function changeImage(src, thumbnail) {
+                const mainImage = document.getElementById('mainImage');
+                if (!mainImage) {
+                    console.error('Main image element not found');
+                    return;
+                }
+                mainImage.src = src;
+
+                const thumbnails = document.querySelectorAll('.thumbnail');
+                thumbnails.forEach(thumb => {
+                    thumb.classList.remove('active');
+                });
+
+                thumbnail.classList.add('active');
+            }
+
+
+            // const mainImage = document.getElementById('mainImage');
+            if (mainImage) {
+                mainImage.addEventListener('click', () => {
+                    mainImage.classList.toggle('zoomed');
+                });
+            }
+
+
+
+            function addToCart(productId) {
+                const variantElement = document.querySelector('select#variant');
+                const quantityElement = document.querySelector('#quantity');
+                const cartCountElement = document.getElementById('cartCount');
+
+                if (!variantElement) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Oops...',
+                        text: 'Please select a variant!',
+                    });
+                    console.error("Variant element not found.");
+                    return;
+                }
+                if (!quantityElement) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Oops...',
+                        text: 'Quantity field is missing!',
+                    });
+                    console.error("Quantity element not found.");
+                    return;
+                }
+
+                const selectedVariantId = variantElement.value;
+                const currentQuantity = parseInt(quantityElement.value);
+
+                if (isNaN(currentQuantity) || currentQuantity <= 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Invalid Quantity',
+                        text: 'Please select a valid quantity!',
+                    });
+                    return;
+                }
+
+                console.log("Adding to cart - Product ID:", productId, "Variant ID:", selectedVariantId, "Quantity:", currentQuantity);
+
+                fetch('/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        productId: productId,
+                        variantId: selectedVariantId,
+                        quantity: currentQuantity,
+                    }),
+                })
+                    .then(response => {
+                        // if (!response.ok) {
+                        //     throw new Error(`Server responded with status: ${response.status}`);
+                        // }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: 'Product added to cart successfully!',
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+
+                            if (cartCountElement) {
+                                cartCountElement.innerText = data.cartCount || 0;
+                            } else {
+                                console.warn("Cart count element not found.");
+                            }
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: data.message || 'Error adding product to cart',
+                            });
+                            console.error("Error response from server:", data);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops!',
+                            text: error.message || 'Something went wrong! Please try again.',
+                        });
+                    });
+            }
+// ......................................................................
+// Quantity selector
+
+let currentQuantity = 1;
+let stock = 0;
+let selectedVariantIdGlobal = null;
+let originalPrice = 0;
+let discountedPrice = 0;
+
+function variantselect() {
+    const variantDropdown = document.getElementById("variant");
+    const selectedVariant = variantDropdown.options[variantDropdown.selectedIndex];
+
+    selectedVariantIdGlobal = selectedVariant.value;
+    stock = parseInt(selectedVariant.getAttribute("data-stock"), 10);
+    originalPrice = parseFloat(selectedVariant.getAttribute("data-original-price"));
+    discountedPrice = parseFloat(selectedVariant.getAttribute("data-discounted-price"));
+
+    currentQuantity = 1;
+    document.getElementById("quantity").value = currentQuantity;
+
+    updateStockDisplay(); // Ensure correct stock display
+    updatePriceDisplay(originalPrice, discountedPrice);
+    updateButtons();
+}
+
+function updateQuantity(change) {
+    let newQuantity = currentQuantity + change;
+    
+    if (newQuantity < 1) {
+        newQuantity = 1;
+    } else if (newQuantity > variant.stock) {
+        Swal.fire({
+            icon: "warning",
+            title: "Stock Limit Reached",
+            text: `Only ${stock} stocks available.`,
+            confirmButtonColor: "#d33",
+        });
+        return; // Prevent updating quantity beyond stock
+    }
+
+    currentQuantity = newQuantity;
+    document.getElementById("quantity").value = currentQuantity;
+    updatePriceDisplay(originalPrice, discountedPrice);
+    updateStockDisplay(); // Ensure stock status is updated
+    updateButtons();
+}
+
+
+function updateStockDisplay() {
+    const stockDisplay = document.getElementById("stock_display");
+
+    if (stock === 0) {
+        stockDisplay.innerText = "Out of Stock";
+        stockDisplay.style.color = "red";
+    } else {
+        stockDisplay.innerText = "In Stock";
+        stockDisplay.style.color = "green";
+    }
+}
+
+
+
+
+function updatePriceDisplay(originalPrice, discountedPrice) {
+    const priceDisplay = document.getElementById("price_display");
+    let originalTotal = (originalPrice * currentQuantity).toFixed(2);
+    let discountedTotal = (discountedPrice * currentQuantity).toFixed(2);
+
+    if (discountedPrice < originalPrice) {
+        priceDisplay.innerHTML = `<span style="text-decoration: line-through; color: #888;">₹${originalTotal}</span> <span style="color: red;">₹${discountedTotal}</span>`;
+    } else {
+        priceDisplay.innerHTML = `₹${originalTotal}`;
+    }
+}
+
+function updateButtons() {
+    document.getElementById("decrease").disabled = currentQuantity <= 1;
+    document.getElementById("increase").disabled = currentQuantity >= stock;
+}
+
+window.onload = function () {
+    const variantDropdown = document.getElementById("variant");
+    if (variantDropdown && variantDropdown.selectedIndex !== -1) {
+        const selectedVariant = variantDropdown.options[variantDropdown.selectedIndex];
+        stock = parseInt(selectedVariant.getAttribute("data-stock"), 10);
+        originalPrice = parseFloat(selectedVariant.getAttribute("data-original-price"));
+        discountedPrice = parseFloat(selectedVariant.getAttribute("data-discounted-price"));
+
+        currentQuantity = 1;
+        document.getElementById("quantity").value = currentQuantity;
+
+        updateStockDisplay(); // Ensure stock display is shown correctly on load
+        updatePriceDisplay(originalPrice, discountedPrice);
+        updateButtons();
+    }
+};
+
+
+
+
+// ......................................................................................................................
+           
+
+
+            function addToWishlist(productId) {
+                const variantElement = document.querySelector('select#variant');
+                const quantityElement = document.querySelector('#quantity');
+                const wishlistCountElement = document.getElementById('wishlistCount'); // Assuming there's a wishlist count element
+
+                if (!variantElement) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Oops...',
+                        text: 'Please select a variant!',
+                    });
+                    console.error("Variant element not found.");
+                    return;
+                }
+                if (!quantityElement) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Oops...',
+                        text: 'Quantity field is missing!',
+                    });
+                    console.error("Quantity element not found.");
+                    return;
+                }
+
+                const selectedVariantId = variantElement.value;
+                const currentQuantity = parseInt(quantityElement.value);
+
+                if (isNaN(currentQuantity) || currentQuantity <= 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Invalid Quantity',
+                        text: 'Please select a valid quantity!',
+                    });
+                    return;
+                }
+
+                console.log("Adding to wishlist - Product ID:", productId, "Variant ID:", selectedVariantId, "Quantity:", currentQuantity);
+
+                fetch('/wishlist/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        productId: productId,
+                        variantId: selectedVariantId,
+                        quantity: currentQuantity,
+                    }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Added to Wishlist!',
+                                text: 'This product has been successfully added to your wishlist.',
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+
+                            if (wishlistCountElement) {
+                                wishlistCountElement.innerText = data.wishlistCount || 0; // Update wishlist count if available
+                            } else {
+                                console.warn("Wishlist count element not found.");
+                            }
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: data.message || 'Error adding product to wishlist',
+                            });
+                            console.error("Error response from server:", data);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops!',
+                            text: error.message || 'Something went wrong! Please try again.',
+                        });
+                    });
+            }
+            
+        </script>
+
+    </body>
+
+    </html>
+    <%- include("../../views/partials/user/footer") %>

@@ -1,0 +1,352 @@
+<%- include("../../views/partials/admin/header") %>
+
+  <head>
+    <!-- Cropper.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <!-- Cropper.js JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+  </head>
+  <style>
+    .error-message {
+      color: red;
+    }
+
+    .thumbnails-container {
+      display: flex;
+      overflow-x: auto;
+    }
+
+    .thumbnail {
+      margin-right: 10px;
+
+    }
+  </style>
+  <section class="content-main">
+    <div class="row">
+      <div class="col-9">
+        <div class="content-header">
+          <h2 class="content-title">Add New Product</h2>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card mb-4">
+          <div class="card-body">
+            <form id="addProductForm" enctype="multipart/form-data">
+              <div class="mb-4">
+                <label for="product_name" class="form-label">Product Name</label>
+                <input type="text" placeholder="Type here" name="productName" class="form-control border"
+                  id="product_name">
+                <span id="productName-error" class="error-message"></span>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label">Full description</label>
+                <textarea placeholder="Type here" id="descriptionid" name="description" class="form-control border"
+                  rows="4"></textarea>
+                <span id="description-error" class="error-message"></span>
+              </div>
+
+              <div class="card mb-4">
+                <div class="card-body">
+                  <div class="row gx-2">
+                    <div class="col-sm-6 mb-3">
+                      <label class="form-label">Category</label>
+                      <select class="form-select border" style="width: 150px;" name="category" id="category">
+                        <%for(let i=0;i<cat.length;i++){%>
+
+
+                          <option value="<%=cat[i].name%>">
+
+                            <%=cat[i].name%>
+
+
+
+
+                          </option>
+                          <%}%>
+
+
+                      </select>
+                      <span id="category-error" class="error-message"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+              <!-- Image 1 -->
+              <div class="card mb-2">
+                <div class="card-header">
+                  <h4>Choose images</h4>
+                </div>
+                <div class="border row">
+                  <div id="addedImagesContainer" class="thumbnails-container"></div>
+                </div>
+
+                <!-- Image 1 -->
+                <div class="row">
+                  <div class="card-body align-items-center" style="margin-bottom: 20px;">
+                    <img src="" alt="Preview" id="imgView1" style="display:none;">
+                    <input class="form-control" type="file" name="images" id="input1"
+                      accept="image/png, image/jpeg, image/jpg" onchange="viewImage(event, 1)">
+                    <div id="images-error" class="error-message"></div>
+                  </div>
+                  <div class="image-cropper d-flex flex-column align-items-center" id="cropperContainer1"
+                    style="display:none; width: 300px; margin-bottom: 20px;">
+                    <img src="" id="croppedImg1" alt="" style="max-width: 100%; height: auto;">
+                    <input type="hidden" name="croppedImageData1" id="croppedImageData1">
+                    <button type="button" id="saveButton1" class="btn-sm btn-primary" style="margin-top: 10px;"
+                      onclick="saveCroppedImage(1)">Save</button>
+                  </div>
+                </div>
+
+                <!-- Image 2 -->
+                <div class="row">
+                  <div class="card-body align-items-center" style="margin-bottom: 20px;">
+                    <img src="" alt="Preview" id="imgView2" style="display:none;">
+                    <input class="form-control" type="file" name="images" id="input2"
+                      accept="image/png, image/jpeg, image/jpg" onchange="viewImage(event, 2)">
+                       <!-- Added error message container for Image 2 -->
+                        <div id="images2-error" class="error-message"></div>
+                  </div>
+                  <div class="image-cropper d-flex flex-column align-items-center" id="cropperContainer2"
+                    style="display:none; width: 300px; margin-bottom: 20px;">
+                    <img src="" id="croppedImg2" alt="" style="max-width: 100%; height: auto;">
+                    <input type="hidden" name="croppedImageData2" id="croppedImageData2">
+                    <button type="button" id="saveButton2" class="btn-sm btn-primary" style="margin-top: 10px;"
+                      onclick="saveCroppedImage(2)">Save</button>
+                  </div>
+                </div>
+
+                <!-- Image 3 -->
+                <div class="row">
+                  <div class="card-body align-items-center" style="margin-bottom: 20px;">
+                    <img src="" alt="Preview" id="imgView3" style="display:none;">
+                    <input class="form-control" type="file" name="images" id="input3"
+                      accept="image/png, image/jpeg, image/jpg" onchange="viewImage(event, 3)">
+                      <!-- Added error message container for Image 3 -->
+                       <div id="images3-error" class="error-message"></div>
+                  </div>
+                  <div class="image-cropper d-flex flex-column align-items-center" id="cropperContainer3"
+                    style="display:none; width: 300px; margin-bottom: 20px;">
+                    <img src="" id="croppedImg3" alt="" style="max-width: 100%; height: auto;">
+                    <input type="hidden" name="croppedImageData3" id="croppedImageData3">
+                    <button type="button" id="saveButton3" class="btn-sm btn-primary" style="margin-top: 10px;"
+                      onclick="saveCroppedImage(3)">Save</button>
+                  </div>
+                </div>
+              </div>
+
+
+
+              <div>
+                <button class="btn btn-md rounded font-sm hover-up" type="submit">Publish</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+
+    function viewImage(event, id) {
+      const input = event.target;
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          // Display the preview image
+          const imgView = document.getElementById(`imgView${id}`);
+          imgView.src = e.target.result;
+          imgView.style.display = 'block';
+
+          // Show the cropper container
+          const cropperContainer = document.getElementById(`cropperContainer${id}`);
+          cropperContainer.style.display = 'flex';
+
+          // Set the initial image for cropping
+          const croppedImg = document.getElementById(`croppedImg${id}`);
+          croppedImg.src = e.target.result;
+
+          // Initialize Cropper.js on the cropped image element
+          // (Destroy any previous instance if needed)
+          if (window[`cropper${id}`]) {
+            window[`cropper${id}`].destroy();
+          }
+          window[`cropper${id}`] = new Cropper(croppedImg, {
+            aspectRatio: 1,
+            viewMode: 1,
+            guides: true,
+            background: false,
+            autoCropArea: 1,
+            zoomable: true
+          });
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function saveCroppedImage(id) {
+      console.log("Save button clicked for image", id);
+
+      // Retrieve the cropper instance stored on the window object
+      const cropper = window[`cropper${id}`];
+      if (!cropper) {
+        console.error('No cropper instance found for image', id);
+        return;
+      }
+
+      // Get the cropped canvas from the cropper
+      const croppedCanvas = cropper.getCroppedCanvas();
+      if (!croppedCanvas) {
+        console.error('Cropped canvas not available for image', id);
+        return;
+      }
+
+      // Convert the cropped canvas to a data URL (Base64 encoded image)
+      const dataUrl = croppedCanvas.toDataURL('image/jpeg');
+      console.log("Cropped data URL:", dataUrl);
+
+      // Update the cropped image preview with the cropped canvas data URL
+      const croppedImg = document.getElementById(`croppedImg${id}`);
+      croppedImg.src = dataUrl;
+
+      // Destroy the cropper instance to remove the cropping overlay
+      cropper.destroy();
+
+      // Ensure the container remains visible so the cropped preview can be seen
+      document.getElementById(`cropperContainer${id}`).style.display = 'block';
+
+      // Save the Base64 string in the hidden input for form submission
+      const hiddenInput = document.getElementById(`croppedImageData${id}`);
+      if (hiddenInput) {
+        hiddenInput.value = dataUrl;
+        console.log('Hidden input updated with:', hiddenInput.value);
+      } else {
+        console.error('Hidden input not found for image', id);
+      }
+    }
+
+
+
+
+    document.getElementById('addProductForm').addEventListener('submit',async function(e) {
+      e.preventDefault();
+      
+      let isValid=true;
+
+      const name=document.getElementById('product_name').value.trim();
+      const description=document.getElementById('descriptionid').value.trim();
+      const category=document.getElementById('category').value.trim();
+      
+
+      const nameError=document.getElementById('productName-error');
+      const descriptionError=document.getElementById('description-error');
+      const catError=document.getElementById('category-error');
+
+      nameError.textContent="";
+      descriptionError.textContent="";
+      catError.textContent="";
+
+      if(name===""){
+        nameError.textContent='Product name is required';
+        isValid=false;
+      }
+
+      if(description===""){
+        descriptionError.textContent="Description is required";
+        isValid=false
+      }
+
+      if(category===""){
+        catError.textContent="Please select a category";
+        isValid=false;
+      }
+
+
+      // Validate image inputs
+  const imageInput1 = document.getElementById('input1');
+  const imageInput2 = document.getElementById('input2');
+  const imageInput3 = document.getElementById('input3');
+
+  const imageError1 = document.getElementById('images-error');
+  const imageError2 = document.getElementById('images2-error');
+  const imageError3 = document.getElementById('images3-error');
+
+  // Reset image errors
+  imageError1.textContent = "";
+  imageError2.textContent = "";
+  imageError3.textContent = "";
+
+  if (!imageInput1.files || imageInput1.files.length === 0) {
+    imageError1.textContent = "Please select an image for Image 1";
+    isValid = false;
+  }
+
+  if (!imageInput2.files || imageInput2.files.length === 0) {
+    imageError2.textContent = "Please select an image for Image 2";
+    isValid = false;
+  }
+
+  if (!imageInput3.files || imageInput3.files.length === 0) {
+    imageError3.textContent = "Please select an image for Image 3";
+    isValid = false;
+  }
+
+  if(!isValid){
+    return;
+  }
+
+  
+  const formData=new FormData(this);
+
+  try {
+      const response=await fetch('/admin/addProducts',{
+        method:'POST',
+        body: formData
+      });
+
+      const data=await response.json();
+        
+
+      if(data.success){
+        Swal.fire({
+          title:'Success!',
+          text:data.message || "Product added successfully",
+          icon:'success',
+          confirmButtonText: 'OK'
+        }).then((result)=>{
+          if(result.isConfirmed){
+            window.location.href='/admin/products'
+          }
+        })
+      }else{
+        throw new Error(data.message || 'Failed to add product')
+      }
+
+  } catch (error) {
+    console.error('Error',error);
+    Swal.fire({
+      title:'Error',
+      text:error.message || "Something went wrong",
+      icon:'error',
+      confirmButtonText: 'OK'
+    })
+  }
+
+});
+
+
+
+
+
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+
+
+  <%- include("../../views/partials/admin/footer") %>

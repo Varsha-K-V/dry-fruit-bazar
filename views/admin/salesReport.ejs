@@ -1,0 +1,246 @@
+<%- include('../../views/partials/admin/header') %>
+
+<div class="content-wrapper" style="padding-top: 20px;">
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="row mb-4" style="margin-top: 70px;">
+            <div class="col-12">
+                <div class="page-title-box d-flex align-items-center justify-content-between" style="background: #f8f9fa; padding: 15px; border-radius: 5px;">
+                    <h4 class="mb-0 font-weight-bold text-primary">Sales Report</h4>
+                    <div class="btn-group">
+                        <a href="/admin/sales-report/download-excel?startDate=<%= startDate %>&endDate=<%= endDate %>&reportType=<%= reportType %>" 
+                           class="btn btn-success btn-sm ml-2">
+                            <i class="fas fa-file-excel mr-1"></i> Export Excel
+                        </a>
+                        <a href="/admin/sales-report/download-pdf?startDate=<%= startDate %>&endDate=<%= endDate %>&reportType=<%= reportType %>" 
+                           class="btn btn-danger btn-sm ml-2">
+                            <i class="fas fa-file-pdf mr-1"></i> Export PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <form id="reportFilterForm" class="row align-items-end">
+                            <div class="col-md-3">
+                                <label class="form-label font-weight-bold">Report Type</label>
+                                <select class="form-control form-control-sm" name="reportType" id="reportType" onchange="updateDateRange()">
+                                    <option value="daily" <%= reportType === 'daily' ? 'selected' : '' %>>Daily</option>
+                                    <option value="weekly" <%= reportType === 'weekly' ? 'selected' : '' %>>Weekly</option>
+                                    <option value="monthly" <%= reportType === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                                    <option value="yearly" <%= reportType === 'yearly' ? 'selected' : '' %>>Yearly</option>
+                                    <option value="custom" <%= reportType === 'custom' ? 'selected' : '' %>>Custom Range</option>
+                                </select>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="custom-date-range row"
+                                 id="customDateRange"
+                                 style= <%= reportType === 'custom' ? 'display: flex;' : 'display: none;' %>
+                                  >
+                                    <div class="col-md-4">
+                                        <label class="form-label font-weight-bold">Start Date</label>
+                                        <input type="date" class="form-control form-control-sm" id="startDate" name="startDate" value="<%= startDate %>">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label font-weight-bold">End Date</label>
+                                        <input type="date" class="form-control form-control-sm" id="endDate" name="endDate" value="<%= endDate %>">
+                                    </div>
+                                    <div class="col-md-4 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-primary btn-sm">Apply Filter</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card bg-gradient-info shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-white mb-0">Total Orders</h6>
+                                <h2 class="text-white mb-0 font-weight-bold"><%= totalOrders %></h2>
+                            </div>
+                            <div class="rounded-circle bg-white p-3">
+                                <i class="fas fa-shopping-cart text-info fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-gradient-success shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-white mb-0">Total Amount</h6>
+                                <h2 class="text-white mb-0 font-weight-bold">₹<%= totalAmountAfterDiscount %></h2>
+                            </div>
+                            <div class="rounded-circle bg-white p-3">
+                                <i class="fas fa-rupee-sign text-success fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-gradient-warning shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-white mb-0">Total Discount</h6>
+                                <h2 class="text-white mb-0 font-weight-bold">₹<%= totalDiscount %></h2>
+                            </div>
+                            <div class="rounded-circle bg-white p-3">
+                                <i class="fas fa-tags text-warning fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="font-weight-bold">Order ID</th>
+                                <th class="font-weight-bold">Date</th>
+                                <th class="font-weight-bold">Customer</th>
+                                <th class="font-weight-bold">Products</th>
+                                <th class="font-weight-bold">Amount</th>
+                                <th class="font-weight-bold">Discount</th>
+                                <th class="font-weight-bold">Final Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% orders.forEach(order => { %>
+                                <tr style="color:#000000">
+                                    <td><span class="text-primary"><%= order._id %></span></td>
+                                    <td><%= order.createdAt.toLocaleDateString() %></td>
+                                    <td><%= order.shippingAddress.name %></td>
+                                    <td>
+                                        <% order.products.forEach(item => { %>
+                                            <div class="mb-1"><%= item.productId.productName %> (<%= item.quantity %>)</div>
+                                        <% }); %>
+                                    </td>
+                                    <td>₹<%= order.totalAmount %></td>
+                                    <td>₹<%= order.coupon ? order.coupon.discount : 0 %></td>
+                                    <td>₹<%= order.totalAmount - (order.coupon ? order.coupon.discount : 0) %></td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div>
+            <% if (currentPage > 1) { %>
+                <a href="?page=<%= currentPage - 1 %>&limit=<%= typeof limit !== 'undefined' ? limit : 10 %>&startDate=<%= startDate %>&endDate=<%= endDate %>&reportType=<%= reportType %>">Previous</a>
+            <% } %>
+        
+            <span>Page <%= currentPage %> of <%= totalPages %></span>
+        
+            <% if (currentPage < totalPages) { %>
+                <a href="?page=<%= currentPage + 1 %>&limit=<%= typeof limit !== 'undefined' ? limit : 10 %>&startDate=<%= startDate %>&endDate=<%= endDate %>&reportType=<%= reportType %>">Next</a>
+            <% } %>
+        </div>
+        
+    </div>
+</div>
+
+<style>
+    .bg-gradient-info {
+        background: linear-gradient(45deg, #36b9cc 0%, #1cc88a 100%);
+    }
+    .bg-gradient-success {
+        background: linear-gradient(45deg, #1cc88a 0%, #28a745 100%);
+    }
+    .bg-gradient-warning {
+        background: linear-gradient(45deg, #f6c23e 0%, #fd7e14 100%);
+    }
+    .card {
+        border: none;
+        margin-bottom: 24px;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+    .table td, .table th {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+    .form-label {
+        margin-bottom: 0.5rem;
+        color: #4e73df;
+    }
+    .btn-sm {
+        padding: 0.25rem 1rem;
+    }
+    .shadow-sm {
+        box-shadow: 0 0.125rem 0.25rem 0 rgba(58, 59, 69, 0.2) !important;
+    }
+</style>
+
+<script>
+    function updateDateRange() {
+        const reportType = document.getElementById('reportType').value;
+        const customDateRange = document.getElementById('customDateRange');
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+
+        const now = new Date();
+        let startDate, endDate;
+
+    
+        switch (reportType) {
+            case 'daily':
+                startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0); 
+                endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 23, 59, 59);
+                 break;
+
+            case 'weekly':
+                startDate = new Date();
+                startDate.setDate(now.getDate() - now.getDay() + 1); // Start of the week (Monday)
+                endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 23, 59, 59);;
+                break;
+            case 'monthly':
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1); // Start of the month
+                endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 23, 59, 59);;
+                break;
+            case 'yearly':
+                startDate = new Date(now.getFullYear(), 0, 1); // Start of the year
+                endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 23, 59, 59);;
+                break;
+            case 'custom':
+                customDateRange.style.display = 'flex';
+                return; // Custom does not auto-update dates
+            default:
+                startDate = new Date();
+                endDate = new Date();
+        }
+
+        // Format dates to YYYY-MM-DD
+        const formatDate = (date) => {
+            return date.toISOString().split('T')[0];
+        };
+
+        // Update date inputs
+        startDateInput.value = formatDate(startDate);
+        endDateInput.value = formatDate(endDate);
+
+        // Hide custom date range inputs if not in custom mode
+        // customDateRange.style.display = 'none';
+    }
+</script>

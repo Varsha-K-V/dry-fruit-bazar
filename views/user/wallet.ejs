@@ -1,0 +1,196 @@
+<head>
+  <title>My Wallet</title>
+</head>
+
+<%- include("../../views/partials/user/header") %>
+  <style>
+    .wallet-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+
+    .wallet-balance {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .transaction-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .offer-badge {
+      background-color: red;
+      color: white;
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+
+    .btn.btn-outline {
+      color: #000 !important;
+      /* Set text color to black */
+      border-color: #ccc !important;
+      /* Optionally adjust border color */
+    }
+  </style>
+
+  <body>
+    <div class="container wallet-container">
+      <h1 class="mb-4 text-center">My Wallet</h1>
+      <div class="card mb-4">
+        <div class="card-body text-center">
+          <p class="wallet-balance">Balance: ₹<%= wallet.balance.toFixed(2) %>
+          </p>
+          <br>
+          <br>
+          <br>
+
+          <button id="addFundsBtn" class="btn btn-success">Add Funds</button>
+        </div>
+      </div>
+
+      <h3>Transaction History</h3>
+      <% if (wallet.transactions && wallet.transactions.length> 0) { %>
+        <ul class="list-group transaction-list">
+          <% wallet.transactions.forEach(txn=> { %>
+            <li class="list-group-item">
+              <strong>
+                <%= txn.type %>
+              </strong> - ₹<%= txn.amount.toFixed(2) %> on <%= txn.date.toDateString() %>
+                  <% if (txn.description) { %>
+                    <br>
+                    <small>
+                      <%= txn.description %>
+                    </small>
+                    <% } %>
+            </li>
+            <% }) %>
+        </ul>
+
+
+        <!-- Pagination Links -->
+        <div class="pagination mt-3">
+          <% if (currentPage> 1) { %>
+            <a href="/wallet?page=<%= currentPage - 1 %>" class="btn btn-outline">Previous</a>
+            <% } %>
+
+              <% for (let i=1; i <=totalPages; i++) { %>
+                <a href="/wallet?page=<%= i %>" class="btn <%= i === currentPage ? 'btn-primary' : 'btn-outline' %>">
+                  <%= i %>
+                </a>
+                <% } %>
+
+                  <% if (currentPage < totalPages) { %>
+                    <a href="/wallet?page=<%= currentPage + 1 %>" class="btn btn-outline">Next</a>
+                    <% } %>
+        </div>
+
+        <% } else { %>
+          <p>No transactions yet.</p>
+          <% } %>
+    </div>
+
+    <!-- Razorpay Checkout Script -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+      document.getElementById('addFundsBtn').addEventListener('click', function () {
+        Swal.fire({
+          title: 'Enter amount to add to wallet',
+          input: 'number',
+          inputLabel: 'Amount in INR',
+          inputPlaceholder: 'Enter amount',
+          showCancelButton: true,
+          inputValidator: (value) => {
+            if (!value || Number(value) <= 0) {
+              return 'Please enter a valid amount';
+            }
+            if (Number(value) > 5000) {
+              return 'Maximum allowed amount is ₹5000';
+            }
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            var amount = Number(result.value);
+            fetch('/wallet/recharge', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ amount: amount })
+            })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  var options = {
+                    "key": "rzp_test_RGrR5vKSth3GqS",
+                    "amount": data.order.amount,
+                    "currency": data.order.currency,
+                    "name": "Your Site Name",
+                    "description": "Wallet Recharge",
+                    "order_id": data.order.id,
+                    "handler": function (response) {
+                      fetch('/wallet/recharge-callback', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          orderId: data.order.id,
+                          paymentId: response.razorpay_payment_id,
+                          signature: response.razorpay_signature,
+                          amount: amount
+                        })
+                      })
+                        .then(resp => resp.json())
+                        .then(result => {
+                          if (result.success) {
+                            Swal.fire({
+                              icon: 'success',
+                              title: 'Success',
+                              text: 'Wallet recharged successfully!'
+                            }).then(() => {
+                              window.location.reload();
+                            });
+                          } else {
+                            Swal.fire({
+                              icon: 'error',
+                              title: 'Error',
+                              text: 'Recharge failed: ' + result.message
+                            });
+                          }
+                        });
+                    },
+                    "prefill": {
+                      "name": "<%= user.name %>",
+                      "email": "<%= user.email %>"
+                    },
+                    "theme": {
+                      "color": "#F37254"
+                    }
+                  };
+                  var rzp1 = new Razorpay(options);
+                  rzp1.open();
+                } else {
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message
+                  });
+                }
+              })
+              .catch(err => {
+                console.error(err);
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops!',
+                  text: 'Something went wrong. Please try again.'
+                });
+              });
+          }
+        });
+      });
+
+    </script>
+    <!-- Bootstrap JS (Optional, for Bootstrap components if needed) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+
+  <%- include("../../views/partials/user/footer") %>

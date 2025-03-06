@@ -1,0 +1,109 @@
+<%- include("../../views/partials/admin/header") %>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Variants for <%= product.productName %></title>
+</head>
+
+<div class="container mt-5">
+    <h2 class="text-center">Variants for <%= product.productName %></h2>
+    
+    <div class="text-center my-4">
+        <button 
+            class="btn btn-success" 
+            onclick="window.location.href='/admin/addVariant?productId=<%= product._id %>'">
+            Add Variant
+        </button>
+    </div>
+
+    <% if (variants.length > 0) { %>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Weight</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for (let variant of variants) { %>
+            <tr>
+                <td><%= variant.weight %></td>
+                <td>₹<%= variant.price %></td>
+                <td><%= variant.stock %></td>
+                <td>
+                    <!-- Edit Button -->
+                    <button 
+                       class="btn btn-warning btn-sm" 
+                       onclick="window.location.href='/admin/editVariant?productId=<%= product._id %>&variantId=<%= variant._id %>'">
+                       Edit
+                    </button>
+
+                    <!-- Delete Button -->
+                    <button class="btn btn-danger btn-sm" 
+                    onclick="deleteVariant('<%= product._id %>', '<%= variant._id %>')">
+                    Delete</button>
+                </td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+    <% } else { %>
+    <div class="alert alert-warning text-center">
+        No variants found for this product.
+    </div>
+    <% } %>
+</div>
+
+<script>
+    function deleteVariant(productId, variantId) {
+        
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This action cannot be undone!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                
+                fetch(`/admin/deleteVariant?productId=${productId}&variantId=${variantId}`, {
+                    method: 'GET',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: 'The variant has been deleted.',
+                            icon: 'success',
+                            confirmButtonText: 'Ok'
+                        }).then(() => {
+                            window.location.href = `/admin/viewVariants?id=${productId}`;  // Reload the variants list
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: data.message,
+                            icon: 'error',
+                            confirmButtonText: 'Ok'
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Something went wrong!',
+                        icon: 'error',
+                        confirmButtonText: 'Ok'
+                    });
+                });
+            }
+        });
+    }
+</script>
+
+<%- include("../../views/partials/admin/footer") %>

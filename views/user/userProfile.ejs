@@ -1,0 +1,279 @@
+
+
+<!--Header-->
+<%-include("../../views/partials/user/header") %>
+
+<!-- BREADCRUMB -->
+<div id="breadcrumb" class="section">
+  <!-- container -->
+  <div class="container">
+    <!-- row -->
+    <div class="row">
+    
+      <div class="col-md-12">
+        <br>
+        <h3 class="breadcrumb-header">User Profile</h3>
+        <!-- <div class="breadcrumb-tree">
+          <a href="/">Home</a>
+          <a href="">Profile</a>
+          <li class="active">Profile</li>
+        </div> -->
+      </div>
+    </div>
+    <!-- /row -->
+  </div>
+  <!-- /container -->
+</div>
+<!-- /BREADCRUMB -->
+
+<!--Side bar seciton-->
+<%- include("../../views/partials/user/profileSidebar") %> 
+
+      <!-- Main Content -->
+      <div class="col-md-9">
+        <div class="content">
+          <div class="info-box">
+            <form id="userProfileForm" action="/userProfile" method="POST">
+                <h2>Personal Information</h2>
+                <div class="form-group">
+                  <div>
+                    <label for="name">Name</label>
+                    <input id="name" name="name" readonly type="text" value="<%=user.name%>" class="form-control" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div>
+                    <label for="mobile">Mobile Number</label>
+                    <input id="mobile" name="mobileNumber" readonly type="text" value="<%=user.mobileNumber%>" class="form-control" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div>
+                    <label for="email">E-mail</label>
+                    <input id="email" name="email" readonly type="email" value="<%=user.email%>" class="form-control" disabled />
+                  </div>
+                </div>
+                <button type="submit" id="saveBtn" class="submit-btn" style="display: none;">Save Changes</button>
+                <button type="button" id="editBtn" class="edit-btn">Edit</button>
+                <button type="button" id="cancelBtn" class="edit-btn" style="display: none;">Cancel</button>
+              </form>
+          </div>
+        </div>
+      </div>
+      <!-- /Main Content -->
+    </div>
+    <!-- /row -->
+  </div>
+  <!-- /container -->
+</div>
+<!-- /SECTION -->
+
+<!-- Footer -->
+<%- include("../../views/partials/user/footer") %>
+
+
+<style>
+  .info-box {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    position: relative;
+  }
+
+  .form-group {
+    margin-bottom: 25px;
+  }
+
+  .form-group label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: border-color 0.3s;
+  }
+
+  .form-group input:focus {
+    border-color: #ff0000;
+    outline: none;
+  }
+
+  .form-group input:read-only {
+    background-color: #f8f9fa;
+  }
+
+  .password-info {
+    margin-top: 5px;
+  }
+
+  .password-info a {
+    color: #ff0000;
+    text-decoration: none;
+    font-size: 14px;
+  }
+
+  .password-info a:hover {
+    text-decoration: underline;
+  }
+
+  .submit-btn {
+    background-color: #ff0000;
+    color: #fff;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+    margin-right: 10px;
+  }
+
+  .submit-btn:hover {
+    background-color: #e60000;
+  }
+
+  .edit-btn {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background-color: #ff0000;
+    color: #fff;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+  }
+
+  .edit-btn:hover {
+    background-color: #e60000;
+  }
+</style>
+
+<!-- Add userProfile.js -->
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    const editBtn = document.getElementById('editBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const inputs = document.querySelectorAll('#userProfileForm input');
+  
+    const originalValues = {};
+    inputs.forEach(input => {
+      originalValues[input.id] = input.value;
+    });
+  
+    editBtn.addEventListener('click', () => {
+      inputs.forEach(input => input.readOnly = false); 
+      editBtn.style.display = 'none';
+      saveBtn.style.display = 'inline-block';
+      cancelBtn.style.display = 'inline-block';
+    });
+  
+    cancelBtn.addEventListener('click', () => {
+      inputs.forEach(input => {
+        input.readOnly = true; 
+        input.value = originalValues[input.id]; 
+      });
+      editBtn.style.display = 'inline-block';
+      saveBtn.style.display = 'none';
+      cancelBtn.style.display = 'none';
+    });
+
+    document.querySelector('.submit-btn').addEventListener('click', async (e) => {
+  e.preventDefault(); 
+
+  const name = document.getElementById('name').value.trim();
+  const mobileNumber = document.getElementById('mobile').value.trim();
+
+  
+  const nameRegex = /^[a-zA-Z\s]+$/; 
+  const mobileRegex = /^[0-9]{10}$/; 
+
+  
+  if (!name) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Validation Error',
+      text: 'Name is required!',
+    });
+    return;
+  }
+  if (!nameRegex.test(name)) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Validation Error',
+      text: 'Name should only contain letters and spaces.',
+    });
+    return;
+  }
+
+  
+  if (!mobileNumber) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Validation Error',
+      text: 'Mobile number is required!',
+    });
+    return;
+  }
+  if (!mobileRegex.test(mobileNumber)) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Validation Error',
+      text: 'Mobile number must be exactly 10 digits.',
+    });
+    return;
+  }
+
+  
+  try {
+    const response = await fetch('/updateUserProfile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, mobileNumber }),
+    });
+    const result = await response.json();
+
+    if (response.ok) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Profile Updated',
+        text: result.message,
+      }).then(() => {
+        location.reload(); 
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Update Failed',
+        text: result.message,
+      });
+    }
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Server Error',
+      text: 'Something went wrong. Please try again later.',
+    });
+  }
+});
+
+  </script>
+  <style>
+    .footer {
+	background: #111111;
+	padding-top: 70px;
+	margin-top: 686px;
+}
+  </style>
+

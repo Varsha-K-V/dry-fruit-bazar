@@ -1,0 +1,15 @@
+           function updateButtons() {
+               document.getElementById("decrease").disabled = currentQuantity <= 1;        
+               document.getElementById("increase").disabled = currentQuantity >= stock;    
+           }
+           window.onload = function () {
+               const variantDropdown = document.getElementById("variant");
+               if (variantDropdown && variantDropdown.selectedIndex !== -1) {
+                   const selectedVariant = variantDropdown.options[variantDropdown.selectedIndex];
+                   stock = parseInt(selectedVariant.getAttribute("data-stock"), 10);       
+                   price = parseFloat(selectedVariant.getAttribute("data-price"));
+                   document.getElementById("stock_display").innerText = stock;
+                   document.getElementById("price_display").innerText = (price * currentQuantity).toFixed(2);
+                   updateButtons();
+               }
+           };

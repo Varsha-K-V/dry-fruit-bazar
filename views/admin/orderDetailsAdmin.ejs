@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Details</title>
+  <!-- Include your CSS file here -->
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- Add Tailwind CDN for styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Bootstrap Bundle with JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+</head>
+
+<body class="bg-gray-50">
+  <div class="container mx-auto p-6 max-w-7xl">
+    <!-- Header -->
+    <div class="flex items-center gap-4 mb-8">
+      <a href="/admin/order" class="flex items-center text-gray-600 hover:text-gray-800">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd"
+            d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+            clip-rule="evenodd" />
+        </svg>
+        Back to Orders
+      </a>
+      <h1 class="text-2xl font-semibold text-olive-600">Order Details</h1>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <!-- Order Information Card -->
+      <div class="bg-white p-6 rounded-lg shadow">
+        <p class="text-lg font-semibold mb-4">Order Information</p>
+        <div class="space-y-4">
+          <div class="flex items-start gap-2">
+            <div class="w-32 text-gray-500">Order ID:</div>
+            <div class="font-medium">
+              <%= order._id %>
+            </div>
+          </div>
+          <div class="flex items-start gap-2">
+            <div class="w-32 text-gray-500">Date:</div>
+            <div>
+              <%= new Date(order.createdAt).toLocaleDateString() %>
+            </div>
+          </div>
+          <div class="flex items-start gap-2">
+            <div class="w-32 text-gray-500">Payment Method:</div>
+            <div>
+              <%= order.paymentMethod %>
+            </div>
+          </div>
+          <% if (order.status) { %>
+            <% let orderStatus=order.status; %>
+              <% console.log(order); %>
+                <div class="flex items-start gap-2">
+                  <div class="w-32 text-gray-500">Overall Status:</div>
+                  <span class="px-3 py-1 rounded-full text-sm 
+    <% if (orderStatus === " Pending") { %> bg-yellow-100 text-yellow-800
+                    <% } else if (orderStatus==="Confirmed" ) { %> bg-gray-100 text-gray-800
+                      <% } else if (orderStatus==="Processing" ) { %> bg-blue-100 text-blue-800
+                        <% } else if (orderStatus==="Shipped" ) { %> bg-purple-100 text-purple-800
+                          <% } else if (orderStatus==="Delivered" ) { %> bg-green-100 text-green-800
+                            <% } else if (orderStatus==="Cancelled" ) { %> bg-red-100 text-red-800
+                              <% } else if (orderStatus==="Returned" ) { %> bg-pink-100 text-pink-800
+                                <% } %>
+                                  ">
+                                  <%= orderStatus %>
+                  </span>
+
+                </div>
+                <% } else { %>
+                  <div class="text-red-500">No Status Found</div>
+                  <% } %>
+
+        </div>
+      </div>
+
+      <!-- Customer Details Card -->
+      <div class="bg-white p-6 rounded-lg shadow">
+        <p class="text-lg font-semibold mb-4">Customer Details</p>
+        <div class="space-y-4">
+          <!-- Name Section -->
+          <div class="flex items-start gap-2">
+            <div class="w-32 text-gray-500">Name:</div>
+            <div class="font-medium">
+              <%= order.shippingAddress.name %>
+            </div>
+          </div>
+
+          <!-- Address Section -->
+          <div class="flex items-start gap-2">
+            <svg class="w-5 h-5 text-gray-500 shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <div class="flex-1 space-y-1">
+              <div class="font-medium">
+                <%= order.shippingAddress.addresstype %>
+              </div>
+              <% if(order.shippingAddress.landmark) { %>
+                <div class="text-gray-600">
+                  <%= order.shippingAddress.landmark %>
+                </div>
+                <% } %>
+                  <div class="text-gray-600">
+                    <%= order.shippingAddress.city %>
+                  </div>
+                  <div class="text-gray-600">
+                    <%= order.shippingAddress.state %>
+                  </div>
+                  <div class="text-gray-600">
+                    <%= order.shippingAddress.pincode %>
+                  </div>
+                  <div class="text-gray-600">
+                    <%= order.shippingAddress.phone %>
+                  </div>
+            </div>
+          </div>
+
+          <!-- Alternative Phone Section -->
+          <% if(order.shippingAddress.alternativeNo) { %>
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+              <div class="text-gray-600">
+                <%= order.shippingAddress.alternativeNo %>
+              </div>
+            </div>
+            <% } %>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- return request pannel -->
+
+    <% if (order.returnRequest && order.returnRequest.status !=="Not Requested" ) { %>
+      <div class="mt-6 bg-white p-6 rounded-lg shadow-md w-full max-w-lg mx-auto">
+        <h2 class="text-xl font-semibold mb-4 border-b pb-2">Return Request</h2>
+        <div class="mb-3">
+          <p class="text-gray-700"><strong>Status:</strong> <span class="font-medium">
+              <%= order.returnRequest.status %>
+            </span></p>
+        </div>
+        <div class="mb-3">
+          <p class="text-gray-700"><strong>Reason:</strong> <span class="font-medium">
+              <%= order.returnRequest.reason %>
+            </span></p>
+        </div>
+        <div class="mb-4">
+          <p class="text-gray-700"><strong>Requested On:</strong> <span class="font-medium">
+              <%= new Date(order.returnRequest.requestDate).toLocaleDateString() %>
+            </span></p>
+        </div>
+
+        <% if (order.returnRequest.status==="Pending" ) { %>
+          <div class="mt-4 flex justify-between">
+            <button id="approveReturnBtn" data-orderid="<%= order._id %>"
+              class="px-4 py-2 bg-green-600 text-white rounded-md shadow-md hover:bg-green-700">
+              Approve Return
+            </button>
+            <button id="rejectReturnBtn" data-orderid="<%= order._id %>"
+              class="px-4 py-2 bg-red-600 text-white rounded-md shadow-md hover:bg-red-700">
+              Reject Return
+            </button>
+          </div>
+          <% } %>
+      </div>
+      <% } %>
+
+
+
+
+
+        <!-- Order Items Section -->
+        <div class="mt-8">
+          <h2 class="text-xl font-semibold mb-4">Order Items</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse bg-white rounded-lg shadow">
+              <thead>
+                <tr class="bg-gray-50">
+                  <th class="px-4 py-3 text-left">Item</th>
+                  <th class="px-4 py-3 text-left">Package Size</th>
+
+                  <th class="px-4 py-3 text-left">Quantity</th>
+                  <th class="px-4 py-3 text-left">Price</th>
+
+
+                </tr>
+              </thead>
+              <tbody>
+                <% order.products.forEach(function(product) { %>
+                  <tr class="border-t">
+                    <td class="px-4 py-3">
+                      <%= product.productId.productName %>
+                    </td>
+                    <td class="px-4 py-3">
+                      <%= product.variantId.weight %>
+                    </td>
+
+                    <td class="px-4 py-3">
+                      <%= product.quantity %>
+                    </td>
+                    <td class="px-4 py-3">₹<%= product.price %>
+                    </td>
+
+
+                  </tr>
+                  <% }); %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Total Amount -->
+        <div class="mt-6 flex justify-end">
+          <div class="mt-6 flex justify-end flex-col items-end">
+            <% if (order.coupon && order.coupon.discount) { %>
+              <div class="text-lg">
+                Discount: <span class="text-red-500" style="color: black;">-₹<%= order.coupon.discount.toFixed(2) %>
+                    </span>
+              </div>
+              <% } %>
+                <div class="text-xl font-semibold">
+                  Total: ₹<%= order.totalAmount %>
+                </div>
+          </div>
+
+        </div>
+        <div>
+          <% if (order.status==="Delivered" || order.status==="Cancelled" || order.status==="Returned" ) { %>
+            <button class="bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed" disabled>
+              Edit Status
+            </button>
+            <% } else { %>
+              <button onclick="editStatus('<%= order._id %>', '<%= order.status %>')"
+                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-800">
+                Edit Status
+              </button>
+              <% } %>
+        </div>
+  </div>
+
+  <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="statusModalLabel">Update Item Status</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="updateStatusForm" action="/admin/updateOrderStatus" method="POST">
+            <input type="hidden" name="orderId" id="modalOrderId">
+
+            <label for="status">Status</label>
+            <select class="form-select" name="status" id="modalStatus">
+              <option value="Processing">Processing</option>
+              <option value="Shipped">Shipped</option>
+              <option value="Delivered">Delivered</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+
+            <div class="mt-3">
+              <button type="submit" class="btn btn-success">Update Status</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+  <script>
+
+    function editStatus(orderId, currentStatus) {
+      document.getElementById("modalOrderId").value = orderId;
+      document.getElementById("modalStatus").value = currentStatus;
+
+
+      let statusModal = new bootstrap.Modal(document.getElementById("statusModal"));
+      statusModal.show();
+    }
+
+
+    document.getElementById("updateStatusForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      let selectedStatus = document.getElementById("modalStatus").value;
+
+      if (selectedStatus === "Cancelled") {
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You are about to cancel this order. This action cannot be undone!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Yes, cancel it!"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            event.target.submit();
+          }
+        });
+      } else {
+        event.target.submit();
+      }
+    });
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+      $("#approveReturnBtn").click(async function () {
+        const orderId = $(this).data("orderid");
+
+        Swal.fire({
+          title: "Approve Return Request",
+          text: "Are you sure you want to approve this return request?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#28a745",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, approve it!"
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            try {
+              const res = await fetch("/admin/orders/approve-return", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ orderId })
+              });
+              const data = await res.json();
+              if (data.success) {
+                Swal.fire({
+                  title: "Approved!",
+                  text: data.message,
+                  icon: "success",
+                  timer: 2000,
+                  showConfirmButton: false
+                }).then(() => {
+                  location.reload();
+                });
+              } else {
+                Swal.fire({
+                  title: "Error!",
+                  text: data.error || "Failed to approve the return request.",
+                  icon: "error"
+                });
+              }
+            } catch (error) {
+              Swal.fire({
+                title: "Error!",
+                text: "Something went wrong. Please try again.",
+                icon: "error"
+              });
+            }
+          }
+        });
+      });
+
+
+      $("#rejectReturnBtn").click(async function () {
+        const orderId = $(this).data("orderid");
+
+        Swal.fire({
+          title: "Reject Return Request",
+          text: "Are you sure you want to reject this return request?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Yes, reject it!"
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            try {
+              const res = await fetch("/admin/orders/reject-return", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ orderId })
+              });
+              const data = await res.json();
+              if (data.success) {
+                Swal.fire({
+                  title: "Rejected!",
+                  text: data.message,
+                  icon: "success",
+                  timer: 2000,
+                  showConfirmButton: false
+                }).then(() => {
+                  location.reload();
+                });
+              } else {
+                Swal.fire({
+                  title: "Error!",
+                  text: data.error || "Failed to reject the return request.",
+                  icon: "error"
+                });
+              }
+            } catch (error) {
+              Swal.fire({
+                title: "Error!",
+                text: "Something went wrong. Please try again.",
+                icon: "error"
+              });
+            }
+          }
+        });
+      });
+    });
+
+
+  </script>
+</body>
+
+</html>

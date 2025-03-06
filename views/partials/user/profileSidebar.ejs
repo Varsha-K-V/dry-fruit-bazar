@@ -1,0 +1,181 @@
+<!-- SECTION -->
+<div class="section">
+    <!-- container -->
+    <div class="container">
+        <!-- row -->
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3">
+                <div class="sidebar" style="border-radius:5px;">
+                    <h2>
+                        <%= user.name %>
+                    </h2>
+                    <ul>
+                        <li>
+                            <a  href="/userProfile">
+                                <i class="fa fa-user"></i>
+                                Account Overview
+                            </a>
+                        </li>
+                        <li>
+                            <a  href="/orderHistory">
+                                <i class="fa fa-box"></i>
+                                My Orders
+                            </a>
+                        </li>
+                        <li>
+                            <a  href="/addressManagement">
+                                <i class="fa fa-map-marker-alt"></i>
+                                Manage Addresses
+                            </a>
+                        </li>
+                        <li>
+                            <a  href="/wallet">
+                                <i class="fa fa-wallet"></i>
+                                Wallet
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/changePassword">
+                                <i class="fa fa-lock"></i>
+                                Change Password
+                            </a>
+                        </li>
+                    </ul>
+                    <a class="logout" href="/logout">LOG OUT</a>
+                </div>
+            </div>
+            <!-- /Sidebar -->
+
+
+            <style>
+                body {
+                    margin: 0;
+                    font-family: Arial, sans-serif;
+                    background-color: #fff;
+                    color: #000;
+                }
+
+                .sidebar {
+                    width: 100%;
+                    background-color: #fff;
+                    padding: 20px;
+                    box-sizing: border-box;
+                    color: #000;
+                    border-right: 1px solid #ccc;
+                }
+
+                .sidebar h2 {
+                    font-size: 18px;
+                    margin: 10px 0;
+                }
+
+                .sidebar ul {
+                    list-style: none;
+                    padding: 0;
+                }
+
+                .sidebar ul li {
+                    margin: 10px 0;
+                }
+
+                .sidebar ul li a {
+                    text-decoration: none;
+                    color: #000;
+                    display: flex;
+                    align-items: center;
+                    padding: 10px;
+                    border-radius: 5px;
+                }
+
+                .sidebar ul li a.active {
+                    background-color: #ff0000;
+                    color: #fff;
+                }
+
+                .sidebar ul li a i {
+                    margin-right: 10px;
+                }
+
+                .sidebar .logout {
+                    background-color: #ff0000;
+                    color: #fff;
+                    text-align: center;
+                    padding: 10px;
+                    border-radius: 5px;
+                    margin-top: 180px;
+                    text-decoration: none;
+                    display: block;
+                }
+
+                .content {
+                    width: 100%;
+                    padding: 0px;
+                    box-sizing: border-box;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                .info-box {
+                    background-color: #fff;
+                    color: #000;
+                    padding: 20px;
+                    border-radius: 10px;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    width: 100%;
+                    position: relative;
+                }
+
+                .info-box h2 {
+                    text-align: center;
+                    margin-bottom: 20px;
+                }
+
+                .form-group {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 20px;
+                }
+
+                .form-group label {
+                    display: block;
+                    margin-bottom: 5px;
+                }
+
+                .form-group input {
+                    width: 100%;
+                    padding: 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    box-sizing: border-box;
+                }
+
+                .form-group .password-info {
+                    font-size: 12px;
+                    color: #ccc;
+                }
+
+                .submit-btn {
+                    background-color: #ff0000;
+                    color: #fff;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    display: block;
+                    margin: 0 auto;
+                }
+
+                .edit-btn {
+                    position: absolute;
+                    top: 20px;
+                    right: 20px;
+                    background-color: #ff0000;
+                    color: #fff;
+                    padding: 5px 10px;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                }
+            </style>

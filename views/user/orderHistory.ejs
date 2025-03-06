@@ -1,0 +1,493 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"> -->
+<%-include("../../views/partials/user/header") %>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            color: #1a1a1a;
+        }
+
+        .filter-section {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #333;
+            background: white;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .order-header {
+            padding: 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .order-info {
+            font-size: 14px;
+        }
+
+        .order-info strong {
+            color: #1a1a1a;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .order-info span {
+            color: #666;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-confirmed {
+            background: #e2e3e5;
+            color: #41464b;
+        }
+
+        .status-processing {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-shipped {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-delivered {
+            background: #c3e6cb;
+            color: #155724;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-returned {
+            background: #e8daef;
+            color: #6f42c1;
+        }
+
+
+        .order-content {
+            padding: 16px;
+        }
+
+        .product-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .product-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .product-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-details h4 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+
+        .product-details p {
+            font-size: 14px;
+            color: #666;
+            margin: 4px 0;
+        }
+
+        .product-price {
+            text-align: right;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .order-footer {
+            padding: 16px;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-total {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-outline {
+            border: 1px solid #007bff;
+            color: #007bff;
+            background: white;
+        }
+
+        .btn-outline:hover {
+            background: #f8f9fa;
+        }
+
+        .empty-orders {
+            text-align: center;
+            padding: 48px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .empty-orders i {
+            font-size: 48px;
+            color: #ddd;
+            margin-bottom: 16px;
+        }
+
+        .empty-orders h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+
+        .empty-orders p {
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: transparent;
+            color: #333;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        /* .back-button i {
+            margin-right: 1px;
+        } */
+
+        .back-button:hover {
+            background: #eee;
+        }
+
+        @media (max-width: 768px) {
+            .product-item {
+                grid-template-columns: 1fr;
+            }
+
+            .product-image {
+                margin: 0 auto;
+            }
+
+            .product-price {
+                text-align: center;
+            }
+
+            .order-footer {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            padding: 8px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .pagination .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .pagination .btn-outline {
+            border: 1px solid #007bff;
+            color: #007bff;
+        }
+
+        .pagination .btn-outline:hover {
+            background: #f8f9fa;
+        }
+    </style>
+    <!-- </head> -->
+
+    <body>
+        <div class="container">
+            <a href="/userProfile" class="back-button">
+                <i class="fas fa-arrow-left"></i> Back to profile
+            </a>
+            <br>
+            <br>
+            <br>
+            <div class="page-header">
+                <h1 class="page-title" style="font-size: 25px;">My Orders</h1>
+            </div>
+
+
+
+            <% if (orders && orders.length> 0) { %>
+                <% orders.forEach(order=> { %>
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-info">
+                                <strong>Order ID</strong>
+                                <span>
+                                    <%= order._id %>
+                                </span>
+                            </div>
+                            <div class="order-info">
+                                <strong>Order Date</strong>
+                                <span>
+                                    <%= new Date(order.createdAt).toLocaleDateString() %>
+                                </span>
+                            </div>
+                            <div class="order-info">
+                                <strong>Status:</strong>
+                                <% if (order.status) { %>
+                                    <div class="status-badge status-<%= order.status.toLowerCase() %>">
+                                        <%= order.status %>
+                                    </div>
+                                    <% } else { %>
+                                        <div class="status-badge status-pending">Pending</div>
+                                        <% } %>
+                            </div>
+
+                        </div>
+
+                        <div class="order-content">
+                            <div class="product-list">
+                                <% order.products.forEach(product=> { %>
+                                    <div class="product-item">
+                                        <div class="product-image">
+                                            <img src="/uploads/productImage/<%= product.productId?.productImage[0] || 'productImage/default.jpg' %>"
+                                                alt="<%= product.productId?.productName %>">
+                                        </div>
+                                        <div class="product-details">
+                                            <h4>
+                                                <%= product.productId?.productName %>
+                                            </h4>
+                                            <p>Weight: <%= product.variantId.weight %>
+                                            </p>
+                                            <p>Quantity: <%= product.quantity %>
+                                            </p>
+                                            <p>Price: ₹<%= product.price.toFixed(2) %>
+                                            </p>
+                                        </div>
+                                        <div class="product-price">
+                                            ₹<%= (product.price * product.quantity).toFixed(2) %>
+                                        </div>
+                                    </div>
+                                    <% }); %>
+                            </div>
+                        </div>
+
+                        <div class="order-footer">
+                            <div class="order-total">
+                                Total: ₹<%= order.totalAmount.toFixed(2) %>
+                            </div>
+                            <div class="action-buttons">
+                                <a href="/orderDetails/<%= order._id %>" class="btn btn-primary">
+                                    <i class="fas fa-eye"></i> View Details
+                                </a>
+                                <% if (orders.statusHistory && orders.statusHistory[orders.statusHistory.length -
+                                    1].status==='Delivered' ) { %>
+                                    <a href="/reorder/<%= orders._id %>" class="btn btn-outline">
+                                        <i class="fas fa-redo"></i> Buy Again
+                                    </a>
+                                    <% } %>
+                            </div>
+                        </div>
+                    </div>
+                    <% }); %>
+                        <% } else { %>
+                            <div class="empty-orders">
+                                <i class="fas fa-shopping-bag"></i>
+                                <h3>No Orders Yet</h3>
+                                <p>Looks like you haven't placed any orders yet.</p>
+                                <a href="/shop" class="btn btn-primary">Start Shopping</a>
+                            </div>
+                            <% } %>
+        </div>
+
+        <div class="pagination">
+            <% if (currentPage> 1) { %>
+                <a href="/orderHistory?page=<%= currentPage - 1 %>" class="btn btn-outline">Previous</a>
+                <% } %>
+
+                    <% for (let i=1; i <=totalPages; i++) { %>
+                        <a href="/orderHistory?page=<%= i %>"
+                            class="btn <%= i === currentPage ? 'btn-primary' : 'btn-outline' %>">
+                            <%= i %>
+                        </a>
+                        <% } %>
+
+                            <% if (currentPage < totalPages) { %>
+                                <a href="/orderHistory?page=<%= currentPage + 1 %>" class="btn btn-outline">Next</a>
+                                <% } %>
+        </div>
+
+
+    </body>
+
+    <script>
+        // Filter functionality
+        document.querySelectorAll('.filter-select').forEach(select => {
+            select.addEventListener('change', function () {
+
+
+            });
+        });
+    </script>
+
+    <%- include("../../views/partials/user/footer") %>
+
+        //
+
+        </html>

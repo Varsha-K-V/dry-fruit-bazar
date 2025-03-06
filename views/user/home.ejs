@@ -1,0 +1,265 @@
+
+<%- include("../../views/partials/user/header") %>
+
+  <style>
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fefefe;
+    }
+    .hero-section {
+      background: url('hero-image.jpg') no-repeat center center/cover;
+      color: white;
+      text-align: center;
+      padding: 50px 20px;
+    }
+    .product-card img {
+      width: 100%;
+      height: 200px;
+      border-radius: 10px;
+    }
+    .category-card img {
+      width: 100%;
+      height: 200px;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+    .testimonial {
+      background-color: #fff3e6;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 10px;
+    }
+    .banner-headder {
+        background-color: #dba56f;
+        width: 100%;
+    }
+    .product-cart-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.product-img {
+    height: 250px;  
+    width: 100%;    
+    overflow: hidden;  
+}
+
+.product-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;  
+    border-radius: 8px; 
+}
+
+.product-content-wrap {
+    padding: 10px;
+    text-align: center;  
+}
+
+.product-content-wrap h6, .product-content-wrap h5 {
+    margin: 10px 0;
+    font-size: 1rem;
+}
+
+.product-content-wrap h5 {
+    color: red;
+}
+
+.wishlist-btn {
+   position: absolute;
+   top: 8px;
+   right: 8px;
+   background-color: white; /* White background */
+   /* border: 2px solid #1e918b; */
+   border-radius: 50%;
+   padding: 8px;
+   cursor: pointer;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   transition: all 0.3s ease-in-out;
+}
+
+/* Heart icon with only an outline */
+.wishlist-btn i {
+   /* color: black;  */
+   font-size: 16px; /* Adjust size */
+   transition: color 0.3s ease-in-out;
+   -webkit-text-stroke: 2px #1e918b;  
+   color: transparent; /* Transparent inside */
+}
+
+/* Hover effect: Fill heart with black */
+.wishlist-btn:hover i {
+   color: #1e918b; /* Filled black heart on hover */
+}
+
+/* When product is added to wishlist, fill heart */
+.wishlist-btn.active i {
+   -webkit-text-stroke: 0px; /* Remove outline */
+   color: #1e918b; /* Filled heart */
+}
+.product__filter {
+  height: auto;
+}
+
+  </style>
+    <!-- Hero Section Begin -->
+    <section class="hero">
+        <div class="hero__slider owl-carousel">
+            <div class="hero__items set-bg" data-setbg="img/banner7.jpg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xl-5 col-lg-7 col-md-8">
+                            <div class="hero__text">
+                                <h6></h6>
+                                <h2 style="color: aliceblue;">"Dry Fruits, Nuts & Seeds"</h2>
+                                <h2 style="color: aliceblue;">The Difference & Benefits</h2>
+                                <a href="#" class="primary-btn">Shop now <span class="arrow_right"></span></a>
+                                <div class="hero__social">
+                                    <a href="#"><i class="fa fa-facebook"></i></a>
+                                    <a href="#"><i class="fa fa-twitter"></i></a>
+                                    <a href="#"><i class="fa fa-pinterest"></i></a>
+                                    <a href="#"><i class="fa fa-instagram"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero__items set-bg" data-setbg="img/banner8.webp">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xl-5 col-lg-7 col-md-8">
+                            <div class="hero__text">
+                                <h6></h6>
+                                <h2 style="color: aliceblue;">Best Dry Fruits to Keep You Warm and Healthy This Winter </h2>
+                                <p></p>
+                                <a href="#" class="primary-btn">Shop now <span class="arrow_right"></span></a>
+                                <div class="hero__social">
+                                    <a href="#"><i class="fa fa-facebook"></i></a>
+                                    <a href="#"><i class="fa fa-twitter"></i></a>
+                                    <a href="#"><i class="fa fa-pinterest"></i></a>
+                                    <a href="#"><i class="fa fa-instagram"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Hero Section End -->
+
+    <section class="container text-center py-5">
+        <div class="banner-headder">
+        <h2>Discover the Finest Blends: Spicy Dry Fruits,Sweet Nuts,<hr> 
+            Mixed Seeds & More</h2>
+        </div>
+        <!-- <div class="row justify-content-center mt-4">
+          <div class="col-md-3">
+            <div class="product-card">
+              <img src="/img/mixedDryFruit.jpg" alt="Mixed Dry Fruits" >
+              <h5 class="mt-2" style="color: black;">Mixed Dry Fruits</h5>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="product-card">
+              <img src="img/mixedSeeds.jpeg" alt="Mixed Seeds">
+              <h5 class="mt-2" style="color: black;">Mixed Seeds</h5>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="product-card">
+              <img src="img/caramelNuts.jpg" alt="Caramel Nuts">
+              <h5 class="mt-2" style="color: black;">Caramel Nuts</h5>
+            </div>
+          </div> -->
+          <!-- <div class="col-md-3">
+            <div class="product-card">
+              <img src="spicy-nuts.jpg" alt="Spicy Nuts">
+              <h5 class="mt-2">Spicy Nuts</h5>
+            </div>
+          </div> -->
+        </div>
+      </section>
+
+      <!-- <section class="container text-center py-5">
+        <h2 style="color: black; font-weight: bold;" >Shop By Categories</h2>
+        <div class="row mt-4">
+          <div class="col-md-4">
+            <div class="category-card">
+              <img src="img/nuts.webp" alt="Nuts">
+              <h5 class="mt-2" style="color: black;">Nuts</h5>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="category-card">
+              <img src="img/Dates.jpeg" alt="Dates">
+              <h5 class="mt-2" style="color: black;">Dates</h5>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="category-card">
+              <img src="img/Seeds.jpeg" alt="Seeds">
+              <h5 class="mt-2" style="color: black;">Seeds</h5>
+            </div>
+          </div>
+        </div>
+      </section> -->
+
+
+
+<section class="product spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <ul class="filter__controls">
+                    <li style="color: black; font-weight: bold;" data-filter=".new-arrivals">New Arrivals</li>
+                </ul>
+            </div>
+        </div>
+        <div class="row product__filter" style="height: auto;">
+            <% if (products && products.length > 0) { %>
+              <% for (let i = 0; i < products.length; i++) { %>
+                <div class="col-lg-3 col-md-4 col-12 col-sm-6" >
+                  <div class="product-cart-wrap mb-30" style="height: auto;">
+                    <div class="product-img-action-wrap" >
+                      <div class="product-img product-img-zoom">
+                        <a href="/productDetails?id=<%= products[i]._id %>">
+                          <img class="default-img" src="/uploads/productImage/<%= products[i].productImage[0] %>" alt="<%= products[i].productName %>">
+                        </a>
+                      </div>
+                     
+                    </div>
+        
+                    <div class="product-content-wrap">
+                      <h6 style="color: black;">
+                        <p style="font-weight: bold;"><%= products[i].productName %></p>
+                      </h6>
+          
+                    </div>
+                  </div>
+                </div>
+              <% } %>
+            <% } else { %>
+              <p>No products available</p>
+              <p>Debug: Products array is <%= products ? 'defined' : 'undefined' %> with length <%= products ? products.length : 0 %></p>
+            <% } %>
+        </div>
+    </div>
+  </section>
+  
+<%- include("../../views/partials/user/footer") %>
+
+
+
+
+
+
+
+
+
