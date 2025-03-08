@@ -190,22 +190,69 @@ const editProduct = async (req, res) => {
       const id = req.params.id;
       const data = req.body;
       console.log("Editing product:", id, data);
+      
+      // Validation
+      if (!data.productName || data.productName.trim() === '') {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Product name is required",
+          field: "productName" 
+        });
+      }
+  
+      if (!data.descriptionData || data.descriptionData.trim() === '') {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Description is required",
+          field: "description" 
+        });
+      }
+  
+      if (!data.category || data.category.trim() === '') {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Category is required",
+          field: "category" 
+        });
+      }
+  
+      // Validate image format if uploaded
+      if (req.files && req.files.newImage) {
+        const file = req.files.newImage[0];
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!allowedTypes.includes(file.mimetype)) {
+          return res.status(400).json({ 
+            success: false, 
+            message: "Only JPG, JPEG, and PNG formats are allowed",
+            field: "image"
+          });
+        }
+      }
   
       // Find category by name
       const categoryDoc = await Category.findOne({ name: data.category });
       if (!categoryDoc) {
-        return res.status(400).json({ success: false, message: "Invalid category" });
+        return res.status(400).json({ 
+          success: false, 
+          message: "Invalid category",
+          field: "category"
+        });
       }
-  
+      
       // Check for duplicate product name
       const existingProduct = await Product.findOne({
-        productName: data.productName,
+        productName: { $regex: new RegExp(`^${data.productName.trim()}$`, 'i') },
         _id: { $ne: id }
       });
+      
       if (existingProduct) {
-        return res.status(400).json({ success: false, message: "Product name already exists" });
+        return res.status(400).json({ 
+          success: false, 
+          message: "Product name already exists",
+          field: "productName"
+        });
       }
-  
+      
       // Prepare images array
       const images = [];
       if (req.files) {
@@ -216,7 +263,7 @@ const editProduct = async (req, res) => {
           req.files.newImage.forEach(file => images.push(file.filename));
         }
       }
-  
+      
       // Process cropped image if available
       if (data.croppedImageData_new) {
         const base64Data = data.croppedImageData_new.replace(/^data:image\/\w+;base64,/, '');
@@ -226,7 +273,7 @@ const editProduct = async (req, res) => {
         fs.writeFileSync(filePath, buffer);
         images.push(filename);
       }
-  
+      
       // Build a single update query
       let updateQuery = {
         $set: {
@@ -235,11 +282,11 @@ const editProduct = async (req, res) => {
           category: categoryDoc._id
         }
       };
-  
+      
       if (images.length > 0) {
         updateQuery.$push = { productImage: { $each: images } };
       }
-  
+      
       // Execute update and log the result for debugging
       const updatedProduct = await Product.findByIdAndUpdate(id, updateQuery, { new: true });
       console.log("Updated product:", updatedProduct);
@@ -247,16 +294,13 @@ const editProduct = async (req, res) => {
       if (!updatedProduct) {
         return res.status(404).json({ success: false, message: "Product not found" });
       }
-  
+      
       res.json({ success: true, message: "Product updated successfully" });
     } catch (error) {
       console.error("Error updating product:", error);
       res.status(500).json({ success: false, message: "Something went wrong. Please try again." });
     }
   };
-  
-
-
 
 
   const deleteSingleImage = async (req,res)=>{

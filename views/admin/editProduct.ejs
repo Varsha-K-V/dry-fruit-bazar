@@ -26,7 +26,7 @@
 
             .error-message {
                 color: red;
-                display: none;
+                display: block; /* Changed from none to block to ensure errors are visible */
             }
 
             .image-cropper {
@@ -296,19 +296,28 @@ document.addEventListener("DOMContentLoaded", function() {
     descriptionError.textContent = "";
     categoryError.textContent = "";
     imageError.textContent = "";
+    
+    // Reset border classes
+    document.getElementById('product_name').classList.remove('border-danger');
+    document.getElementById('description').classList.remove('border-danger');
+    document.getElementById('category').classList.remove('border-danger');
+    document.getElementById('newImage').classList.remove('border-danger');
 
     if (name === "") {
       nameError.textContent = "Product name is required";
+      document.getElementById('product_name').classList.add('border-danger');
       isValid = false;
     }
 
     if (description === "") {
       descriptionError.textContent = "Description is required";
+      document.getElementById('description').classList.add('border-danger');
       isValid = false;
     }
 
     if (category === "") {
       categoryError.textContent = "Please select a category";
+      document.getElementById('category').classList.add('border-danger');
       isValid = false;
     }
 
@@ -318,6 +327,7 @@ document.addEventListener("DOMContentLoaded", function() {
       const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
       if (!allowedExtensions.exec(imageInput.value)) {
         imageError.textContent = "Only JPG, JPEG, and PNG formats are allowed";
+        imageInput.classList.add('border-danger');
         isValid = false;
       }
     }
@@ -349,7 +359,19 @@ document.addEventListener("DOMContentLoaded", function() {
           }
         });
       } else {
-        throw new Error(data.message || "Failed to update product");
+        // Handle field-specific errors from backend
+        if (data.field && data.message) {
+          const errorElement = document.getElementById(`${data.field}-error`);
+          if (errorElement) {
+            errorElement.textContent = data.message;
+            const inputElement = document.getElementById(data.field === 'productName' ? 'product_name' : data.field);
+            if (inputElement) {
+              inputElement.classList.add('border-danger');
+            }
+          }
+        } else {
+          throw new Error(data.message || "Failed to update product");
+        }
       }
     } catch (error) {
       console.error("Error:", error);

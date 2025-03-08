@@ -152,41 +152,53 @@
 
   <script>
 
-    function viewImage(event, id) {
-      const input = event.target;
-      if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          // Display the preview image
-          const imgView = document.getElementById(`imgView${id}`);
-          imgView.src = e.target.result;
-          imgView.style.display = 'block';
-
-          // Show the cropper container
-          const cropperContainer = document.getElementById(`cropperContainer${id}`);
-          cropperContainer.style.display = 'flex';
-
-          // Set the initial image for cropping
-          const croppedImg = document.getElementById(`croppedImg${id}`);
-          croppedImg.src = e.target.result;
-
-          // Initialize Cropper.js on the cropped image element
-          // (Destroy any previous instance if needed)
-          if (window[`cropper${id}`]) {
-            window[`cropper${id}`].destroy();
-          }
-          window[`cropper${id}`] = new Cropper(croppedImg, {
-            aspectRatio: 1,
-            viewMode: 1,
-            guides: true,
-            background: false,
-            autoCropArea: 1,
-            zoomable: true
-          });
-        };
-        reader.readAsDataURL(input.files[0]);
-      }
+function viewImage(event, id) {
+  const input = event.target;
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    // ഓരോ ചിത്രത്തിനും ശരിയായ error container തിരഞ്ഞെടുക്കുക
+    const errorId = id === 1 ? 'images-error' : id === 2 ? 'images2-error' : 'images3-error';
+    
+    // ഫയല്‍ ടൈപ്പ് valid ആണോ എന്ന് പരിശോധിക്കുക
+    if (!allowedTypes.includes(file.type)) {
+      document.getElementById(errorId).textContent = 'Unsupported image format. Please upload JPEG or PNG images only.';
+      return; // തെറ്റ് സംഭവിച്ചാല്‍ ഇനി പ്രോസസ്സ് ചെയ്യേണ്ട
+    } else {
+      document.getElementById(errorId).textContent = ""; // പഴയ error message നീക്കം ചെയ്യുക
     }
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      // പ്രിവ്യൂ കാണിക്കുക
+      const imgView = document.getElementById(`imgView${id}`);
+      imgView.src = e.target.result;
+      imgView.style.display = 'block';
+
+      // Cropper container കാണിക്കുക
+      const cropperContainer = document.getElementById(`cropperContainer${id}`);
+      cropperContainer.style.display = 'flex';
+
+      // Cropped image preview update ചെയ്യുക
+      const croppedImg = document.getElementById(`croppedImg${id}`);
+      croppedImg.src = e.target.result;
+
+      // മുമ്പുള്ള Cropper instance ഉണ്ടെങ്കില്‍ destroy ചെയ്യുക
+      if (window[`cropper${id}`]) {
+        window[`cropper${id}`].destroy();
+      }
+      window[`cropper${id}`] = new Cropper(croppedImg, {
+        aspectRatio: 1,
+        viewMode: 1,
+        guides: true,
+        background: false,
+        autoCropArea: 1,
+        zoomable: true
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+}
 
     function saveCroppedImage(id) {
       console.log("Save button clicked for image", id);

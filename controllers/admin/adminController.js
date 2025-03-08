@@ -21,10 +21,9 @@ const login = async(req,res)=>{
     try {
         
         const {email,password} = req.body;
-        console.log(email,password);
         const admin = await User.findOne({email,is_admin:true});
         if(admin){
-
+            
             const passwordMatch = await bcrypt.compare(password,admin.password);
             console.log("Password match",passwordMatch);
             
