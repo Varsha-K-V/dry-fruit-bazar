@@ -26,7 +26,7 @@
 
             .error-message {
                 color: red;
-                display: block; /* Changed from none to block to ensure errors are visible */
+                display: block; 
             }
 
             .image-cropper {
@@ -171,7 +171,7 @@
   if (input.files && input.files[0]) {
     const reader = new FileReader();
     reader.onload = function(e) {
-      // For new images, show the original preview
+      
       if (id === 'new') {
         const originalPreview = document.getElementById('originalPreview_new');
         const originalImg = document.getElementById('originalImg_new');
@@ -181,7 +181,7 @@
         }
       }
       
-      // Show the cropping container and set the image source for cropping
+      
       const cropperContainer = document.getElementById(id === 'new' ? 'cropperContainer_new' : `cropperContainer${id}`);
       if (cropperContainer) {
         cropperContainer.style.display = 'flex';
@@ -192,12 +192,12 @@
       const croppedImg = document.getElementById(id === 'new' ? 'croppedImg_new' : `croppedImg${id}`);
       if (croppedImg) {
         croppedImg.src = e.target.result;
-        croppedImg.style.display = 'block'; // Ensure the cropper image is visible
+        croppedImg.style.display = 'block'; 
       } else {
         console.error(`Element with id ${id === 'new' ? 'croppedImg_new' : `croppedImg${id}`} not found.`);
       }
       
-      // Initialize Cropper.js (destroy previous instance if any)
+      
       if (window['cropper' + id]) {
         window['cropper' + id].destroy();
       }
@@ -218,25 +218,25 @@
 function saveCroppedImage(id) {
   console.log("Save button clicked for image", id);
   
-  // Retrieve the Cropper instance from the window object
+  
   const cropper = window['cropper' + id];
   if (!cropper) {
     console.error('No cropper instance found for image', id);
     return;
   }
   
-  // Get the cropped canvas from the Cropper
+  
   const croppedCanvas = cropper.getCroppedCanvas();
   if (!croppedCanvas) {
     console.error('Cropped canvas not available for image', id);
     return;
   }
   
-  // Convert the cropped canvas to a Base64 data URL (cropped image)
+  
   const dataUrl = croppedCanvas.toDataURL('image/jpeg');
   console.log("Cropped data URL:", dataUrl);
   
-  // Update the cropped image preview with the cropped data URL
+  
   const croppedImg = document.getElementById(id === 'new' ? 'croppedImg_new' : `croppedImg${id}`);
   if (croppedImg) {
     croppedImg.src = dataUrl;
@@ -245,10 +245,10 @@ function saveCroppedImage(id) {
     console.error(`Element with id ${id === 'new' ? 'croppedImg_new' : `croppedImg${id}`} not found.`);
   }
   
-  // Destroy the Cropper instance to remove the cropping overlay
+  
   cropper.destroy();
   
-  // Ensure the cropping container remains visible
+  
   const cropperContainer = document.getElementById(id === 'new' ? 'cropperContainer_new' : `cropperContainer${id}`);
   if (cropperContainer) {
     cropperContainer.style.display = 'block';
@@ -256,7 +256,7 @@ function saveCroppedImage(id) {
     console.error(`Element with id ${id === 'new' ? 'cropperContainer_new' : `cropperContainer${id}`} not found.`);
   }
   
-  // Save the Base64 string in the hidden input for form submission
+  
   const hiddenInput = document.getElementById(id === 'new' ? 'croppedImageData_new' : `croppedImageData${id}`);
   if (hiddenInput) {
     hiddenInput.value = dataUrl;
@@ -265,7 +265,7 @@ function saveCroppedImage(id) {
     console.error('Hidden input not found for image', id);
   }
   
-  // Optionally, clear the file input so that Multer doesn't process the original file
+  
   const fileInput = document.getElementById(id === 'new' ? 'newImage' : `input${id}`);
   if (fileInput) {
     fileInput.value = '';
@@ -291,13 +291,13 @@ document.addEventListener("DOMContentLoaded", function() {
     const categoryError = document.getElementById('category-error');
     const imageError = document.getElementById('image-error');
 
-    // Reset error messages
+    
     nameError.textContent = "";
     descriptionError.textContent = "";
     categoryError.textContent = "";
     imageError.textContent = "";
     
-    // Reset border classes
+    
     document.getElementById('product_name').classList.remove('border-danger');
     document.getElementById('description').classList.remove('border-danger');
     document.getElementById('category').classList.remove('border-danger');
@@ -321,7 +321,7 @@ document.addEventListener("DOMContentLoaded", function() {
       isValid = false;
     }
 
-    // Validate image input (if a new image is uploaded)
+    
     const imageInput = document.getElementById('newImage');
     if (imageInput.files.length > 0) {
       const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
@@ -336,7 +336,7 @@ document.addEventListener("DOMContentLoaded", function() {
       return;
     }
 
-    // Submit the form using AJAX (fetch API)
+    
     const formData = new FormData(this);
 
     try {
@@ -359,7 +359,7 @@ document.addEventListener("DOMContentLoaded", function() {
           }
         });
       } else {
-        // Handle field-specific errors from backend
+        
         if (data.field && data.message) {
           const errorElement = document.getElementById(`${data.field}-error`);
           if (errorElement) {

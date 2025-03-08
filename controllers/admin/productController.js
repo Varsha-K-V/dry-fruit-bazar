@@ -191,7 +191,7 @@ const editProduct = async (req, res) => {
       const data = req.body;
       console.log("Editing product:", id, data);
       
-      // Validation
+      
       if (!data.productName || data.productName.trim() === '') {
         return res.status(400).json({ 
           success: false, 
@@ -216,7 +216,7 @@ const editProduct = async (req, res) => {
         });
       }
   
-      // Validate image format if uploaded
+      
       if (req.files && req.files.newImage) {
         const file = req.files.newImage[0];
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
@@ -229,7 +229,7 @@ const editProduct = async (req, res) => {
         }
       }
   
-      // Find category by name
+      
       const categoryDoc = await Category.findOne({ name: data.category });
       if (!categoryDoc) {
         return res.status(400).json({ 
@@ -239,7 +239,7 @@ const editProduct = async (req, res) => {
         });
       }
       
-      // Check for duplicate product name
+      
       const existingProduct = await Product.findOne({
         productName: { $regex: new RegExp(`^${data.productName.trim()}$`, 'i') },
         _id: { $ne: id }
@@ -253,7 +253,7 @@ const editProduct = async (req, res) => {
         });
       }
       
-      // Prepare images array
+      
       const images = [];
       if (req.files) {
         if (req.files.images) {
@@ -264,7 +264,7 @@ const editProduct = async (req, res) => {
         }
       }
       
-      // Process cropped image if available
+      
       if (data.croppedImageData_new) {
         const base64Data = data.croppedImageData_new.replace(/^data:image\/\w+;base64,/, '');
         const buffer = Buffer.from(base64Data, 'base64');
@@ -274,7 +274,7 @@ const editProduct = async (req, res) => {
         images.push(filename);
       }
       
-      // Build a single update query
+      
       let updateQuery = {
         $set: {
           productName: data.productName,
@@ -287,7 +287,7 @@ const editProduct = async (req, res) => {
         updateQuery.$push = { productImage: { $each: images } };
       }
       
-      // Execute update and log the result for debugging
+      
       const updatedProduct = await Product.findByIdAndUpdate(id, updateQuery, { new: true });
       console.log("Updated product:", updatedProduct);
       

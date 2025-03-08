@@ -17,34 +17,31 @@ const loadLogin = (req,res)=>{
     res.render("adminLogin",{message:null})
 };
 
-const login = async(req,res)=>{
+const login = async (req, res) => {
     try {
-        
-        const {email,password} = req.body;
-        const admin = await User.findOne({email,is_admin:true});
-        if(admin){
-            
-            const passwordMatch = await bcrypt.compare(password,admin.password);
-            console.log("Password match",passwordMatch);
-            
-            if(passwordMatch){
-                
+        const { email, password } = req.body;
+        const admin = await User.findOne({ email, is_admin: true });
+
+        if (admin) {
+            const passwordMatch = await bcrypt.compare(password, admin.password);
+            console.log("Password match", passwordMatch);
+
+            if (passwordMatch) {
                 req.session.admin = true;
-                req.session.adminEmail =email
-                return res.redirect("/admin/dashboard")
-            }else{
-                return res.redirect("/admin/login");
+                req.session.adminEmail = email;
+                return res.json({ success: true, message: "Login successful!" });
+            } else {
+                return res.json({ success: false, message: "Invalid email or password!" });
             }
-        }else{
-            return res.redirect("/admin/login")
+        } else {
+            return res.json({ success: false, message: "Invalid email or password!" });
         }
     } catch (error) {
-        console.log("loggin error",error);
-        return res.redirect("/pageError")
-
-        
+        console.log("Login error", error);
+        return res.json({ success: false, message: "Something went wrong. Please try again later!" });
     }
 };
+
 
 const loadDashboard = async(req,res)=>{
 

@@ -157,33 +157,33 @@ function viewImage(event, id) {
   if (input.files && input.files[0]) {
     const file = input.files[0];
     const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-    // ഓരോ ചിത്രത്തിനും ശരിയായ error container തിരഞ്ഞെടുക്കുക
+    
     const errorId = id === 1 ? 'images-error' : id === 2 ? 'images2-error' : 'images3-error';
     
-    // ഫയല്‍ ടൈപ്പ് valid ആണോ എന്ന് പരിശോധിക്കുക
+    
     if (!allowedTypes.includes(file.type)) {
       document.getElementById(errorId).textContent = 'Unsupported image format. Please upload JPEG or PNG images only.';
-      return; // തെറ്റ് സംഭവിച്ചാല്‍ ഇനി പ്രോസസ്സ് ചെയ്യേണ്ട
+      return; 
     } else {
-      document.getElementById(errorId).textContent = ""; // പഴയ error message നീക്കം ചെയ്യുക
+      document.getElementById(errorId).textContent = ""; 
     }
 
     const reader = new FileReader();
     reader.onload = function (e) {
-      // പ്രിവ്യൂ കാണിക്കുക
+      
       const imgView = document.getElementById(`imgView${id}`);
       imgView.src = e.target.result;
       imgView.style.display = 'block';
 
-      // Cropper container കാണിക്കുക
+      
       const cropperContainer = document.getElementById(`cropperContainer${id}`);
       cropperContainer.style.display = 'flex';
 
-      // Cropped image preview update ചെയ്യുക
+      
       const croppedImg = document.getElementById(`croppedImg${id}`);
       croppedImg.src = e.target.result;
 
-      // മുമ്പുള്ള Cropper instance ഉണ്ടെങ്കില്‍ destroy ചെയ്യുക
+      
       if (window[`cropper${id}`]) {
         window[`cropper${id}`].destroy();
       }
@@ -203,35 +203,35 @@ function viewImage(event, id) {
     function saveCroppedImage(id) {
       console.log("Save button clicked for image", id);
 
-      // Retrieve the cropper instance stored on the window object
+      
       const cropper = window[`cropper${id}`];
       if (!cropper) {
         console.error('No cropper instance found for image', id);
         return;
       }
 
-      // Get the cropped canvas from the cropper
+      
       const croppedCanvas = cropper.getCroppedCanvas();
       if (!croppedCanvas) {
         console.error('Cropped canvas not available for image', id);
         return;
       }
 
-      // Convert the cropped canvas to a data URL (Base64 encoded image)
+      
       const dataUrl = croppedCanvas.toDataURL('image/jpeg');
       console.log("Cropped data URL:", dataUrl);
 
-      // Update the cropped image preview with the cropped canvas data URL
+      
       const croppedImg = document.getElementById(`croppedImg${id}`);
       croppedImg.src = dataUrl;
 
-      // Destroy the cropper instance to remove the cropping overlay
+      
       cropper.destroy();
 
-      // Ensure the container remains visible so the cropped preview can be seen
+      
       document.getElementById(`cropperContainer${id}`).style.display = 'block';
 
-      // Save the Base64 string in the hidden input for form submission
+      
       const hiddenInput = document.getElementById(`croppedImageData${id}`);
       if (hiddenInput) {
         hiddenInput.value = dataUrl;
@@ -278,7 +278,7 @@ function viewImage(event, id) {
       }
 
 
-      // Validate image inputs
+      
   const imageInput1 = document.getElementById('input1');
   const imageInput2 = document.getElementById('input2');
   const imageInput3 = document.getElementById('input3');
@@ -287,7 +287,7 @@ function viewImage(event, id) {
   const imageError2 = document.getElementById('images2-error');
   const imageError3 = document.getElementById('images3-error');
 
-  // Reset image errors
+  
   imageError1.textContent = "";
   imageError2.textContent = "";
   imageError3.textContent = "";

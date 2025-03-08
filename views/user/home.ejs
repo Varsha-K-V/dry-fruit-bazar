@@ -118,7 +118,7 @@
                                 <h6></h6>
                                 <h2 style="color: aliceblue;">"Dry Fruits, Nuts & Seeds"</h2>
                                 <h2 style="color: aliceblue;">The Difference & Benefits</h2>
-                                <a href="#" class="primary-btn">Shop now <span class="arrow_right"></span></a>
+                                <a href="/shop" class="primary-btn">Shop now <span class="arrow_right"></span></a>
                                 <div class="hero__social">
                                     <a href="#"><i class="fa fa-facebook"></i></a>
                                     <a href="#"><i class="fa fa-twitter"></i></a>
@@ -225,9 +225,9 @@
         <div class="row product__filter" style="height: auto;">
             <% if (products && products.length > 0) { %>
               <% for (let i = 0; i < products.length; i++) { %>
-                <div class="col-lg-3 col-md-4 col-12 col-sm-6" >
-                  <div class="product-cart-wrap mb-30" style="height: auto;">
-                    <div class="product-img-action-wrap" >
+                <div class="col-lg-3 col-md-4 col-12 col-sm-6" style="height: 250px;">
+                  <div class="product-cart-wrap mb-30" style="height:250px">
+                    <div class="product-img-action-wrap" style="height: 250px;">
                       <div class="product-img product-img-zoom">
                         <a href="/productDetails?id=<%= products[i]._id %>">
                           <img class="default-img" src="/uploads/productImage/<%= products[i].productImage[0] %>" alt="<%= products[i].productName %>">
